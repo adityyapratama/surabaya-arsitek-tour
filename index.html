@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wisata Arsitektur Surabaya</title>
+  
+  <!-- Font Google -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Panggil Berkas CSS Eksternal -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ================= OVERLAYS & TOAST ================= -->
+  <div class="toast" id="toast"></div>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('checkout-modal')">✕</button>
+      <div class="modal-icon">🎟️</div>
+      <div class="modal-title" id="modal-title">Konfirmasi Pembelian</div>
+      <div class="modal-sub" id="modal-sub">Periksa detail pesanan sebelum membayar.</div>
+      <div id="modal-details"></div>
+      <button class="modal-btn" onclick="confirmPurchase()">Bayar Sekarang →</button>
+    </div>
+  </div>
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('success-modal')">✕</button>
+      <div class="modal-icon">✅</div>
+      <div class="modal-title">Pembayaran Berhasil!</div>
+      <div class="modal-sub">E-tiket kamu sudah dikonfirmasi. Cek <strong>Akun → Riwayat Pesanan</strong> untuk melihat detail.</div>
+      <button class="modal-btn" onclick="closeModal('success-modal');goToOrders()">Lihat Pesanan</button>
+    </div>
+  </div>
+
+  <!-- ================= NAVIGATION ================= -->
+  <nav class="nav">
+    <div class="nav-logo">Wisata <span>Arsitektur</span> Surabaya</div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showPage('home',this)">Home</button>
+      <button class="nav-link" onclick="showPage('explore',this)">Explore</button>
+      <button class="nav-link" onclick="showPage('events',this)">Events</button>
+      <button class="nav-link" onclick="showPage('tours',this)">Paket Tur</button>
+      <button class="nav-link" onclick="showPage('wishlist',this)">Wishlist</button>
+      <button class="nav-link" onclick="showPage('account',this)">Akun</button>
+    </div>
+    <button class="nav-cart" onclick="showPage('cart',null)">🛒 Keranjang <span class="cart-badge" id="cart-count">0</span></button>
+  </nav>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main>
+    <!-- PAGE: HOME -->
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-deco1"></div><div class="hero-deco2"></div>
+        <div class="hero-label">Discover Surabaya's architectural legacy</div>
+        <div class="hero-title">Explore historic buildings &amp; cultural heritage</div>
+        <div class="hero-sub">Beli tiket masuk, pesan paket tur arsitektur, dan simpan destinasi favorit — semua di satu tempat.</div>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="showPage('explore',document.querySelectorAll('.nav-link')[1])">Explore Destinasi</button>
+          <button class="btn-secondary" onclick="showPage('tours',document.querySelectorAll('.nav-link')[3])">Lihat Paket Tur</button>
+        </div>
+      </div>
+      
+      <div class="section-title">Featured spots</div>
+      <div class="section-sub">5 destinasi arsitektur terbaik di Surabaya</div>
+      <div class="card-grid" id="featured-cards"></div>
+      
+      <div class="section-title">Ulasan pengguna</div>
+      <div class="section-sub">Cerita dari pengunjung sebelumnya</div>
+      <div class="review-row" id="home-reviews"></div>
+    </section>
+
+    <!-- PAGE: EXPLORE -->
+    <section class="page" id="page-explore">
+      <div class="section-title">Semua destinasi</div>
+      <div class="section-sub">Browse dan filter semua spot arsitektur di Surabaya</div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterExplore('all',this)">Semua</button>
+        <button class="filter-btn" onclick="filterExplore('colonial',this)">Kolonial</button>
+        <button class="filter-btn" onclick="filterExplore('art deco',this)">Art Deco</button>
+        <button class="filter-btn" onclick="filterExplore('religious',this)">Religi</button>
+        <button class="filter-btn" onclick="filterExplore('government',this)">Pemerintahan</button>
+      </div>
+      <div class="explore-list" id="explore-list"></div>
+      
+      <div class="section-title">Map view</div>
+      <div class="map-box">🗺️ &nbsp; Integrasi Google Maps API</div>
+    </section>
+
+    <!-- PAGE: EVENTS -->
+    <section class="page" id="page-events">
+      <div class="section-title">Event berlangsung</div>
+      <div class="section-sub">Sedang berlangsung di Surabaya</div>
+      <div class="event-list" id="ongoing-events"></div>
+      
+      <div class="section-title" style="margin-top:2rem;">Event mendatang</div>
+      <div class="section-sub">Tandai kalendermu</div>
+      <div class="event-list" id="upcoming-events"></div>
+    </section>
+
+    <!-- PAGE: PAKET TUR -->
+    <section class="page" id="page-tours">
+      <div class="section-title">Paket Tur Arsitektur</div>
+      <div class="section-sub">Layanan tur original kami — dipandu guide berpengalaman, transaksi langsung di platform ini</div>
+      <div class="tour-grid" id="tour-grid"></div>
+    </section>
+
+    <!-- PAGE: WISHLIST -->
+    <section class="page" id="page-wishlist">
+      <div class="section-title">Wishlist saya</div>
+      <div class="section-sub">Destinasi dan event yang ingin kamu kunjungi</div>
+      <div class="wishlist-cats">
+        <button class="cat-chip active">Semua</button>
+        <button class="cat-chip">Destinasi</button>
+        <button class="cat-chip">Events</button>
+        <button class="cat-chip">+ Kategori baru</button>
+      </div>
+      <div class="wishlist-grid" id="wishlist-grid">
+        <div class="empty-state">Belum ada yang tersimpan.<br>Klik ♡ Simpan di halaman destinasi manapun.</div>
+      </div>
+    </section>
+
+    <!-- PAGE: CART -->
+    <section class="page" id="page-cart">
+      <div class="section-title">Keranjang</div>
+      <div class="section-sub">Periksa pesananmu sebelum checkout</div>
+      <div id="cart-list"></div>
+      <div id="cart-summary-box"></div>
+    </section>
+
+    <!-- PAGE: AKUN -->
+    <section class="page" id="page-account">
+      <div class="section-title">Akun saya</div>
+      <div style="margin-bottom:1.5rem;"></div>
+      <div class="account-layout">
+        <div class="account-sidebar">
+          <button class="acct-menu active" onclick="showAcct('profile',this)">👤 &nbsp;Profil &amp; setting</button>
+          <button class="acct-menu" onclick="showAcct('orders',this)">🎟️ &nbsp;Riwayat pesanan</button>
+          <button class="acct-menu" onclick="showAcct('reviews',this)">📝 &nbsp;Riwayat ulasan</button>
+          <button class="acct-menu" onclick="showAcct('cs',this)">💬 &nbsp;Customer service</button>
+        </div>
+        <div class="account-content">
+          <!-- Sub-page: Profile -->
+          <div class="account-section active" id="acct-profile">
+            <div class="profile-avatar">RA</div>
+            <div style="font-size:17px;font-weight:500;margin-bottom:3px;">Rizky Andrian</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">rizky@email.com</div>
+            <div class="form-row"><label class="form-label">Nama tampilan</label><input class="form-input" value="Rizky Andrian"></div>
+            <div class="form-row"><label class="form-label">Email</label><input class="form-input" type="email" value="rizky@email.com"></div>
+            <div class="form-row"><label class="form-label">Lokasi</label><input class="form-input" value="Surabaya, Jawa Timur"></div>
+            <button class="btn-primary" onclick="showToast('Profil berhasil disimpan!')">Simpan perubahan</button>
+          </div>
+          
+          <!-- Sub-page: Orders -->
+          <div class="account-section" id="acct-orders">
+            <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:1.2rem;">Riwayat pesanan</div>
+            <div id="order-history"><div class="empty-state" style="grid-column:unset;border:none;background:var(--gray-50);">Belum ada pesanan. Beli tiket atau paket tur dulu!</div></div>
+          </div>
+          
+          <!-- Sub-page: Reviews -->
+          <div class="account-section" id="acct-reviews">
+            <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:1.2rem;">Ulasan &amp; cerita saya</div>
+            <div class="review-history-item">
+              <div style="font-size:14px;font-weight:500;">Hotel Majapahit Surabaya</div>
+              <div style="font-size:13px;color:var(--amber-600);margin:4px 0;">★★★★★</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.55;">Bangunan art deco yang sangat terawat. Fasad kolonialnya memukau, sangat recommended untuk pecinta arsitektur.</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">Maret 2025</div>
+            </div>
+            <div class="review-history-item">
+              <div style="font-size:14px;font-weight:500;">House of Sampoerna</div>
+              <div style="font-size:13px;color:var(--amber-600);margin:4px 0;">★★★★☆</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.55;">Museum yang sangat informatif. Arsitektur bangunan pabrik tempo dulu masih sangat otentik.</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">Januari 2025</div>
+            </div>
+            <button class="btn-secondary" style="margin-top:1.2rem;" onclick="showToast('Fitur tulis ulasan segera hadir!')">Tulis ulasan baru</button>
+          </div>
+          
+          <!-- Sub-page: Customer Service -->
+          <div class="account-section" id="acct-cs">
+            <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:1.2rem;">Kontak &amp; bantuan</div>
+            <div class="cs-cards">
+              <div class="cs-card"><div class="cs-icon">💬</div><div class="cs-title">Live chat</div><div class="cs-desc">Sen–Jum, 09.00–17.00 WIB</div></div>
+              <div class="cs-card"><div class="cs-icon">📧</div><div class="cs-title">Email</div><div class="cs-desc">support@wisataarsitektursby.id</div></div>
+              <div class="cs-card"><div class="cs-icon">📞</div><div class="cs-title">Telepon</div><div class="cs-desc">+62 31 5000-1234</div></div>
+              <div class="cs-card"><div class="cs-icon">❓</div><div class="cs-title">FAQ</div><div class="cs-desc">Pemesanan, pembatalan &amp; pertanyaan umum</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE: DETAIL DESTINASI -->
+    <section class="detail-page" id="detail">
+      <button class="back-btn" onclick="closeDetail()">← Kembali</button>
+      <div class="detail-hero" id="d-emoji"></div>
+      <div class="detail-header">
+        <div>
+          <span id="d-tag" class="tag" style="margin-bottom:8px;display:inline-block;"></span>
+          <div style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:5px;" id="d-name"></div>
+          <div style="font-size:13px;color:var(--text-muted);" id="d-addr"></div>
+        </div>
+        <button class="save-btn" onclick="addToWishlist()">♡ Simpan ke Wishlist</button>
+      </div>
+      <div class="detail-meta-grid">
+        <div class="detail-meta-card"><div class="detail-meta-label">Harga tiket</div><div class="detail-meta-value" id="d-price"></div></div>
+        <div class="detail-meta-card"><div class="detail-meta-label">Jam buka</div><div class="detail-meta-value" id="d-hours"></div></div>
+        <div class="detail-meta-card"><div class="detail-meta-label">Rating</div><div class="detail-meta-value" id="d-rating"></div></div>
+      </div>
+      
+      <div class="ticket-box" id="ticket-box">
+        <div class="ticket-box-title">🎟️ Beli Tiket Masuk</div>
+        <div id="ticket-rows"></div>
+        <div class="ticket-subtotal">
+          <span class="ticket-total-label">Total</span>
+          <span class="ticket-total-price" id="ticket-total">Rp 0</span>
+        </div>
+        <button class="checkout-btn" onclick="openTicketCheckout()">Lanjutkan ke Pembayaran</button>
+      </div>
+      
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px;">Tentang tempat ini</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.75;margin-bottom:1.8rem;" id="d-desc"></p>
+      
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px;">Cara menuju ke sana</div>
+      <div class="transport-list" id="d-transport"></div>
+      
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px;">Ulasan pengguna</div>
+      <div id="d-reviews"></div>
+    </section>
+  </main>
+
+  <!-- Panggil Berkas JS Eksternal -->
+  <script src="js/main.js"></script>
+</body>
+</html>

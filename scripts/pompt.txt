@@ -1,0 +1,4 @@
+tolong analisa dan coba code ini. di sini code nya terlalu banyak 
+dan aku ingin mengelompokan dia berdasarkan section supaya tidak menumpuk seperti ini
+kira-kira bagaimana seharusnya saya melakukan nya? 
+tolong berikan saya plan yang best practice yg sehingga web ini bisa lebih muda di baca dan di improve

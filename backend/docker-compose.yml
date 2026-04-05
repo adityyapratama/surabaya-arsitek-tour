@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: web-talitha-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: wisata_arsitektur_sby
+      MYSQL_ROOT_PASSWORD: password123
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
